@@ -1,10 +1,10 @@
 package main
 
 import (
-	"time"
-	"strings"
-	"net/http"
 	"github.com/coreos/go-systemd/daemon"
+	"net/http"
+	"strings"
+	"time"
 )
 
 func launch_watchdog(watchdog_interval int, listenAddr string, expectedCode int, watchdog_cookie string) {
@@ -19,14 +19,14 @@ func launch_watchdog(watchdog_interval int, listenAddr string, expectedCode int,
 	go func() {
 		for {
 			req, err := http.NewRequest("GET", checkAddr, nil)
-			req.Header.Add("Cookie", "session=" + watchdog_cookie)
+			req.Header.Add("Cookie", "session="+watchdog_cookie)
 			client := &http.Client{}
 			resp, err := client.Do(req)
 
 			if err == nil && resp.StatusCode == expectedCode {
 				daemon.SdNotify(false, "WATCHDOG=1")
 			}
-			time.Sleep(time.Duration(watchdog_interval / 3) * time.Second)
+			time.Sleep(time.Duration(watchdog_interval/3) * time.Second)
 		}
 	}()
 }

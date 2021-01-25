@@ -52,7 +52,6 @@ func main2(genocrowdSecret, listenAddr, connect, header, statsd_address, statsd_
 		request_handler = NewRequestLogger(request_handler, *logger)
 	}
 
-
 	mux := http.NewServeMux()
 	mux.Handle("/", request_handler)
 	srv := &http.Server{Handler: mux, Addr: listenAddr}
