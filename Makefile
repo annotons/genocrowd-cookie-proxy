@@ -50,4 +50,4 @@ release:
 	CGO_ENABLED=0 gox $(GO_FLAGS) -os="linux" -output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
 	#ghr -u annotons -replace $(VERSION) dist/
 
-.PHONY: clean lint gofmt vet complexity qc qc_deps test clean release
+.PHONY: clean lint fmt vet complexity qc qc_deps test clean release
