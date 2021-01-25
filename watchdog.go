@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func launch_watchdog(watchdog_interval int, listenAddr string, expectedCode int, watchdog_cookie string) {
+func launchWatchdog(watchdogInterval int, listenAddr string, expectedCode int, watchdogCookie string) {
 	// Listen addr should be `ip:port`, setup the check address. There is
 	// probably a tidier way to do this within, never leaving golang until it's
 	// directed to the backend but that's too much work to figure out.
@@ -19,14 +19,14 @@ func launch_watchdog(watchdog_interval int, listenAddr string, expectedCode int,
 	go func() {
 		for {
 			req, err := http.NewRequest("GET", checkAddr, nil)
-			req.Header.Add("Cookie", "session="+watchdog_cookie)
+			req.Header.Add("Cookie", "session="+watchdogCookie)
 			client := &http.Client{}
 			resp, err := client.Do(req)
 
 			if err == nil && resp.StatusCode == expectedCode {
 				daemon.SdNotify(false, "WATCHDOG=1")
 			}
-			time.Sleep(time.Duration(watchdog_interval/3) * time.Second)
+			time.Sleep(time.Duration(watchdogInterval/3) * time.Second)
 		}
 	}()
 }

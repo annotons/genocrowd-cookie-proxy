@@ -66,33 +66,33 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.URL.Scheme = h.BackendScheme
 
 	if h.AddForwarded {
-		remote_addr := r.RemoteAddr
-		idx := strings.LastIndex(remote_addr, ":")
+		remoteAddr := r.RemoteAddr
+		idx := strings.LastIndex(remoteAddr, ":")
 		if idx != -1 {
-			remote_addr = remote_addr[0:idx]
-			if remote_addr[0] == '[' && remote_addr[len(remote_addr)-1] == ']' {
-				remote_addr = remote_addr[1 : len(remote_addr)-1]
+			remoteAddr = remoteAddr[0:idx]
+			if remoteAddr[0] == '[' && remoteAddr[len(remoteAddr)-1] == ']' {
+				remoteAddr = remoteAddr[1 : len(remoteAddr)-1]
 			}
 		}
-		r.Header.Add("X-Forwarded-For", remote_addr)
+		r.Header.Add("X-Forwarded-For", remoteAddr)
 	}
 
 	r.URL.Host = h.BackendAddress
 
-	conn_hdr := ""
-	conn_hdrs := r.Header["Connection"]
+	connHdr := ""
+	connHdrs := r.Header["Connection"]
 
-	if len(conn_hdrs) > 0 {
+	if len(connHdrs) > 0 {
 		log.WithFields(log.Fields{
-			"headers": conn_hdrs,
+			"headers": connHdrs,
 		}).Debug("Connection headers")
-		conn_hdr = conn_hdrs[0]
+		connHdr = connHdrs[0]
 	}
 
 	var email = ""
-	gx_cookie, err := r.Cookie("session")
+	gxCookie, err := r.Cookie("session")
 	if err == nil {
-		email, _ = timedLookupEmailByCookie(h, gx_cookie.String())
+		email, _ = timedLookupEmailByCookie(h, gxCookie.String())
 		if email != "" {
 			r.Header[h.Header] = []string{email}
 
@@ -101,30 +101,30 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				"path": r.URL.Path,
 			}).Info("Authenticated request")
 
-			metric_incr("requests.authenticated")
+			metricIncr("requests.authenticated")
 		} else {
-			metric_incr("requests.unauthenticated")
+			metricIncr("requests.unauthenticated")
 		}
 	} else {
-		metric_incr("requests.nocookie")
+		metricIncr("requests.nocookie")
 		log.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Error: you don't have a genocrowd cookie. Please login to Genocrowd first.")
 		return
 	}
 
-	upgrade_websocket := false
-	if strings.ToLower(conn_hdr) == "upgrade" {
+	upgradeWebsocket := false
+	if strings.ToLower(connHdr) == "upgrade" {
 		log.Debug("got Connection: Upgrade")
 
-		upgrade_hdrs := r.Header["Upgrade"]
-		//log.Printf("Upgrade headers: %v", upgrade_hdrs)
-		if len(upgrade_hdrs) > 0 {
-			upgrade_websocket = (strings.ToLower(upgrade_hdrs[0]) == "websocket")
+		upgradeHdrs := r.Header["Upgrade"]
+		//log.Printf("Upgrade headers: %v", upgradeHdrs)
+		if len(upgradeHdrs) > 0 {
+			upgradeWebsocket = (strings.ToLower(upgradeHdrs[0]) == "websocket")
 		}
 	}
 
-	if upgrade_websocket {
+	if upgradeWebsocket {
 		hj, ok := w.(http.Hijacker)
 
 		if !ok {

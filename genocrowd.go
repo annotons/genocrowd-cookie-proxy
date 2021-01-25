@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
 	"strings"
 	"time"
 
@@ -17,7 +16,7 @@ func timedLookupEmailByCookie(b *ProxyHandler, cookie string) (string, bool) {
 	email, found := lookupEmailByCookie(b, cookie)
 	t := time.Now()
 	elapsed := t.Sub(start)
-	metric_time("query_timing", elapsed)
+	metricTime("query_timing", elapsed)
 
 	return email, found
 }
@@ -37,14 +36,14 @@ func cookieToSessionKey(b *ProxyHandler, cookie string) (sessionKey string) {
 	}
 
 	// And strip all the exclamations from it.
-	session_key := strings.Replace(string(pt), "!", "", -1)
-	safe_session_key := hexReg.ReplaceAllString(session_key, "")
+	sessionKey := strings.Replace(string(pt), "!", "", -1)
+	safeSessionKey := hexReg.ReplaceAllString(sessionKey, "")
 
 	// Debugging
 	log.WithFields(log.Fields{
-		"sk": safe_session_key,
+		"sk": safeSessionKey,
 	}).Debug("Session Key Decoded")
-	return safe_session_key
+	return safeSessionKey
 }
 
 func lookupEmailByCookie(b *ProxyHandler, cookie string) (email string, found bool) {
@@ -53,17 +52,13 @@ func lookupEmailByCookie(b *ProxyHandler, cookie string) (email string, found bo
 		"hit": found,
 	}).Debug("Cache hit")
 	if found {
-		metric_incr("cache.hit")
+		metricIncr("cache.hit")
 		return cachedEmail.(string), found
 	}
-	metric_incr("cache.miss")
+	metricIncr("cache.miss")
 
-	safe_session_key := cookieToSessionKey(b, cookie)
+	safeSessionKey := cookieToSessionKey(b, cookie)
 
-	log.WithFields(log.Fields{
-		"email": email,
-	}).Debug("Invalid session key / cookie")
-
-	b.Cache.Set(cookie[14:], email, cache.DefaultExpiration)
+	b.Cache.Set(cookie[14:], safeSessionKey, cache.DefaultExpiration)
 	return email, false
 }

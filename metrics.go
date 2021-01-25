@@ -10,12 +10,12 @@ import (
 
 var (
 	Metrics         *statsd.StatsdClient
-	statsd_influxdb bool
+	statsdInfluxdb bool
 )
 
-func configure_metrics(statsd_address, statsd_prefix string) {
-	if len(statsd_address) > 0 {
-		Metrics = statsd.NewStatsdClient(statsd_address, statsd_prefix)
+func configureMetrics(statsdAddress, statsdPrefix string) {
+	if len(statsdAddress) > 0 {
+		Metrics = statsd.NewStatsdClient(statsdAddress, statsdPrefix)
 		err := Metrics.CreateSocket()
 		if err != nil {
 			log.Fatal("Could not configure StatsD connection")
@@ -24,10 +24,10 @@ func configure_metrics(statsd_address, statsd_prefix string) {
 	}
 }
 
-func metric_incr(val string) {
+func metricIncr(val string) {
 	if Metrics != nil {
 		var err error
-		if statsd_influxdb {
+		if statsdInfluxdb {
 			err = Metrics.Incr(",key="+val, 1)
 		} else {
 			err = Metrics.Incr(val, 1)
@@ -38,10 +38,10 @@ func metric_incr(val string) {
 	}
 }
 
-func metric_time(val string, elapsed time.Duration) {
+func metricTime(val string, elapsed time.Duration) {
 	if Metrics != nil {
 		var err error
-		if statsd_influxdb {
+		if statsdInfluxdb {
 			err = Metrics.PrecisionTiming(",key=query_timing", elapsed)
 		} else {
 			err = Metrics.PrecisionTiming("query_timing", elapsed)

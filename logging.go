@@ -48,7 +48,7 @@ func NewRequestLogger(h http.Handler, l log.Logger) *RequestLogger {
 }
 
 func (h *RequestLogger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	request_uri := r.RequestURI
+	requestURI := r.requestURI
 	lrw := &LogResponseWriter{RW: w}
 	h.handler.ServeHTTP(lrw, r)
 	if lrw.RespCode == 0 {
@@ -58,5 +58,5 @@ func (h *RequestLogger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Host != "" {
 		host = r.Host
 	}
-	h.logger.Printf("%s %s \"%s %s %s\" %d %d", r.RemoteAddr, host, r.Method, request_uri, r.Proto, lrw.RespCode, lrw.Size)
+	h.logger.Printf("%s %s \"%s %s %s\" %d %d", r.RemoteAddr, host, r.Method, requestURI, r.Proto, lrw.RespCode, lrw.Size)
 }

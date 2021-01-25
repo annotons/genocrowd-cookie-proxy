@@ -23,16 +23,16 @@ var (
 
 var hexReg, _ = regexp.Compile("[^a-fA-F0-9]+")
 
-func main2(genocrowdSecret, listenAddr, connect, header, statsd_address, statsd_prefix string, watchdog_enable bool, watchdog_interval, watchdog_expect int, watchdog_cookie string) {
+func main2(genocrowdSecret, listenAddr, connect, header, statsdAddress, statsdPrefix string, watchdogEnable bool, watchdogInterval, watchdogExpect int, watchdogCookie string) {
 	// Setup metrics stuff
-	configure_metrics(statsd_address, statsd_prefix)
+	configure_metrics(statsdAddress, statsdPrefix)
 
 	bf, err := blowfish.NewCipher([]byte(genocrowdSecret))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var request_handler http.Handler = &ProxyHandler{
+	var requestHandler http.Handler = &ProxyHandler{
 		Transport: &http.Transport{
 			DisableKeepAlives:  false,
 			DisableCompression: false,
@@ -49,15 +49,15 @@ func main2(genocrowdSecret, listenAddr, connect, header, statsd_address, statsd_
 	}
 
 	if logger != nil {
-		request_handler = NewRequestLogger(request_handler, *logger)
+		requestHandler = NewRequestLogger(requestHandler, *logger)
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", request_handler)
+	mux.Handle("/", requestHandler)
 	srv := &http.Server{Handler: mux, Addr: listenAddr}
 
-	if watchdog_enable {
-		launch_watchdog(watchdog_interval, listenAddr, watchdog_expect, watchdog_cookie)
+	if watchdogEnable {
+		launchWatchdog(watchdogInterval, listenAddr, watchdogExpect, watchdogCookie)
 	}
 
 	log.Printf("Listening on %s", listenAddr)
@@ -104,16 +104,16 @@ func main() {
 			EnvVar: "GXC_HEADER",
 		},
 		cli.StringFlag{
-			Name:   "statsd_address",
+			Name:   "statsdAddress",
 			Value:  "",
 			Usage:  "Set this if you wish to send data to statsd somewhere",
 			EnvVar: "GXC_STATSD",
 		},
 		cli.StringFlag{
-			Name:   "statsd_prefix",
+			Name:   "statsdPrefix",
 			Value:  "gxc.",
 			Usage:  "statsd statistics prefix.",
-			EnvVar: "GXC_STATSD_PREFIX",
+			EnvVar: "GXC_statsdPrefix",
 		},
 		cli.BoolFlag{
 			Name:   "statsd_influxdb",
@@ -121,27 +121,27 @@ func main() {
 			EnvVar: "GXC_STATSD_INFLUXDB",
 		},
 		cli.BoolFlag{
-			Name:   "watchdog_enable",
+			Name:   "watchdogEnable",
 			Usage:  "Enable the SystemD watchdog integration",
 			EnvVar: "GXC_WATCHDOG",
 		},
 		cli.IntFlag{
-			Name:   "watchdog_interval",
+			Name:   "watchdogInterval",
 			Value:  30,
 			Usage:  "Watchdog check interval (seconds)",
-			EnvVar: "GXC_WATCHDOG_INTERVAL",
+			EnvVar: "GXC_watchdogInterval",
 		},
 		cli.IntFlag{
-			Name:   "watchdog_expect",
+			Name:   "watchdogExpect",
 			Value:  200,
 			Usage:  "Error code to expect for a successful request",
-			EnvVar: "GXC_WATCHDOG_EXPECT",
+			EnvVar: "GXC_watchdogExpect",
 		},
 		cli.StringFlag{
-			Name:   "watchdog_cookie",
+			Name:   "watchdogCookie",
 			Value:  "",
 			Usage:  "Genocrowd cookie to provide to watchdog request",
-			EnvVar: "GXC_WATCHDOG_COOKIE",
+			EnvVar: "GXC_watchdogCookie",
 		},
 	}
 
@@ -169,12 +169,12 @@ func main() {
 			c.String("listenAddr"),
 			c.String("connect"),
 			c.String("header"),
-			c.String("statsd_address"),
-			c.String("statsd_prefix"),
-			c.Bool("watchdog_enable"),
-			c.Int("watchdog_interval"),
-			c.Int("watchdog_expect"),
-			c.String("watchdog_cookie"),
+			c.String("statsdAddress"),
+			c.String("statsdPrefix"),
+			c.Bool("watchdogEnable"),
+			c.Int("watchdogInterval"),
+			c.Int("watchdogExpect"),
+			c.String("watchdogCookie"),
 		)
 	}
 
