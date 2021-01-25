@@ -25,7 +25,7 @@ var hexReg, _ = regexp.Compile("[^a-fA-F0-9]+")
 
 func main2(genocrowdSecret, listenAddr, connect, header, statsdAddress, statsdPrefix string, watchdogEnable bool, watchdogInterval, watchdogExpect int, watchdogCookie string) {
 	// Setup metrics stuff
-	configure_metrics(statsdAddress, statsdPrefix)
+	configureMetrics(statsdAddress, statsdPrefix)
 
 	bf, err := blowfish.NewCipher([]byte(genocrowdSecret))
 	if err != nil {
@@ -116,7 +116,7 @@ func main() {
 			EnvVar: "GXC_statsdPrefix",
 		},
 		cli.BoolFlag{
-			Name:   "statsd_influxdb",
+			Name:   "statsdInfluxdb",
 			Usage:  "Format statsd output to be compatible with influxdb/telegraf",
 			EnvVar: "GXC_STATSD_INFLUXDB",
 		},
@@ -162,7 +162,7 @@ func main() {
 			panic("Unknown log level")
 		}
 
-		statsd_influxdb = c.Bool("statsd_influxdb")
+		statsdInfluxdb = c.Bool("statsd_influxdb")
 
 		main2(
 			c.String("genocrowdSecret"),

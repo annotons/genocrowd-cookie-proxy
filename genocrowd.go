@@ -36,8 +36,8 @@ func cookieToSessionKey(b *ProxyHandler, cookie string) (sessionKey string) {
 	}
 
 	// And strip all the exclamations from it.
-	sessionKey := strings.Replace(string(pt), "!", "", -1)
-	safeSessionKey := hexReg.ReplaceAllString(sessionKey, "")
+	xsessionKey := strings.Replace(string(pt), "!", "", -1)
+	safeSessionKey := hexReg.ReplaceAllString(xsessionKey, "")
 
 	// Debugging
 	log.WithFields(log.Fields{
