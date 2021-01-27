@@ -50,6 +50,6 @@ build:
 	CGO_ENABLED=0 gox $(GO_FLAGS) -os="linux" -output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
 
 release: build
-	ghr -u annotons -replace $(VERSION) dist/
+	ghr -u annotons -r genocrowd-cookie-proxy -replace $(VERSION) dist/
 
 .PHONY: clean lint fmt vet test clean release
