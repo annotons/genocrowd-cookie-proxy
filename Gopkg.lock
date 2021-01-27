@@ -57,12 +57,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4848904781077367e382116bbc8c1d5e7113c60c319f42c90c955cdfeef8a5dd"
+  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
   name = "golang.org/x/crypto"
-  packages = [
-    "blowfish",
-    "ssh/terminal",
-  ]
+  packages = ["ssh/terminal"]
   pruneopts = "UT"
   revision = "88942b9c40a4c9d203b82b3731787b672d6e809b"
 
@@ -87,7 +84,6 @@
     "github.com/patrickmn/go-cache",
     "github.com/quipo/statsd",
     "github.com/urfave/cli",
-    "golang.org/x/crypto/blowfish",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
