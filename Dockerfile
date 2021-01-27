@@ -1,4 +1,4 @@
-FROM alpine:3.4
+FROM alpine:3.13
 EXPOSE 5000
 
 RUN apk update && \
