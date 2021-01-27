@@ -44,10 +44,12 @@ $(TARGET): $(SRC) setup.lock
 clean:
 	$(RM) $(TARGET)
 
-release:
+build:
 	rm -rf dist/
 	mkdir dist
 	CGO_ENABLED=0 gox $(GO_FLAGS) -os="linux" -output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
-	#ghr -u annotons -replace $(VERSION) dist/
+
+release: build
+	ghr -u annotons -replace $(VERSION) dist/
 
 .PHONY: clean lint fmt vet test clean release
