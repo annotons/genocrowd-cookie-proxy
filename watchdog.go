@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/coreos/go-systemd/daemon"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/coreos/go-systemd/daemon"
 )
 
 func launchWatchdog(watchdogInterval int, listenAddr string, expectedCode int, watchdogCookie string) {

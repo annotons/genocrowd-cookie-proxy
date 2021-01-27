@@ -10,6 +10,8 @@ The code is a WebSocket-aware SSL-capable HTTP reverse proxy based on
 
 genocrowd-cookie-proxy is adapted from the awesome work of Helena Rasche on [gx-cookie-proxy](https://github.com/hexylena/gx-cookie-proxy)
 
+Although it was written for Genocrowd, it should be very simple to adapt it to other Flask application.
+
 ## Deployment
 
 ### Pre-requisites

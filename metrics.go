@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	Metrics         *statsd.StatsdClient
+	Metrics        *statsd.StatsdClient
 	statsdInfluxdb bool
 )
 

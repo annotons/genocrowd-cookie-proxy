@@ -12,7 +12,6 @@ import (
 
 	"github.com/patrickmn/go-cache"
 	"github.com/urfave/cli"
-	"golang.org/x/crypto/blowfish"
 )
 
 var (
@@ -23,14 +22,9 @@ var (
 
 var hexReg, _ = regexp.Compile("[^a-fA-F0-9]+")
 
-func main2(genocrowdSecret, listenAddr, connect, header, statsdAddress, statsdPrefix string, watchdogEnable bool, watchdogInterval, watchdogExpect int, watchdogCookie string) {
+func main2(genocrowdSecret string, maxAge int, listenAddr, connect, header, statsdAddress, statsdPrefix string, watchdogEnable bool, watchdogInterval, watchdogExpect int, watchdogCookie string) {
 	// Setup metrics stuff
 	configureMetrics(statsdAddress, statsdPrefix)
-
-	bf, err := blowfish.NewCipher([]byte(genocrowdSecret))
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var requestHandler http.Handler = &ProxyHandler{
 		Transport: &http.Transport{
@@ -40,12 +34,13 @@ func main2(genocrowdSecret, listenAddr, connect, header, statsdAddress, statsdPr
 		// Frontend
 		AddForwarded: true,
 		// Backend
-		BackendScheme:  "http",
-		BackendAddress: connect,
-		GalaxyCipher:   bf,
-		Cache:          cache.New(1*time.Hour, 5*time.Minute),
-		EmailCache:     cache.New(1*time.Hour, 5*time.Minute),
-		Header:         header,
+		BackendScheme:   "http",
+		BackendAddress:  connect,
+		Cache:           cache.New(1*time.Hour, 5*time.Minute),
+		EmailCache:      cache.New(1*time.Hour, 5*time.Minute),
+		Header:          header,
+		GenocrowdSecret: genocrowdSecret,
+		MaxAge:          maxAge,
 	}
 
 	if logger != nil {
@@ -78,6 +73,12 @@ func main() {
 			Value:  "USING THE DEFAULT IS NOT SECURE!",
 			Usage:  "Genocrowd Secret",
 			EnvVar: "GENOCROWD_SECRET",
+		},
+		cli.IntFlag{
+			Name:   "maxAge",
+			Value:  2678400,
+			Usage:  "Max cookie age (in seconds, default 31 days)",
+			EnvVar: "GXC_MAX_AGE",
 		},
 		cli.StringFlag{
 			Name:   "listenAddr",
@@ -166,6 +167,7 @@ func main() {
 
 		main2(
 			c.String("genocrowdSecret"),
+			c.Int("maxAge"),
 			c.String("listenAddr"),
 			c.String("connect"),
 			c.String("header"),

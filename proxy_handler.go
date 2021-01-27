@@ -10,7 +10,6 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/patrickmn/go-cache"
-	"golang.org/x/crypto/blowfish"
 )
 
 type ProxyHandler struct {
@@ -18,12 +17,13 @@ type ProxyHandler struct {
 	// Backend
 	BackendAddress string
 	BackendScheme  string
-	GalaxyCipher   *blowfish.Cipher
 	Cache          *cache.Cache
 	EmailCache     *cache.Cache
 	Header         string
 	// Frontend
-	AddForwarded bool
+	AddForwarded    bool
+	GenocrowdSecret string
+	MaxAge          int
 }
 
 func Copy(dest *bufio.ReadWriter, src *bufio.ReadWriter) {
@@ -90,7 +90,7 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var email = ""
-	gxCookie, err := r.Cookie("session")
+	gxCookie, err := r.Cookie("session") // Flask's cookie name is "session" by default
 	if err == nil {
 		email, _ = timedLookupEmailByCookie(h, gxCookie.String())
 		if email != "" {
