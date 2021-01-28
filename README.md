@@ -67,6 +67,7 @@ The genocrowd-cookie-proxy is also configurable via environment variables:
 Parameter            | Env Var               | Usage
 -------------------- | -------------------   | -----------
 `--genocrowdSecret`     | `GENOCROWD_SECRET`       | Genocrowd cookie secret
+`--maxAge`     | `GXC_MAX_AGE`       | Maximum age of Genocrowd cookie
 `--listenAddr`       | `GXC_LISTEN_ADDR`     | Proxy listening address
 `--connect`          | `GXC_BACKEND_URL`     | Backend host + port to connect to
 `--logLevel`         | `GXC_LOGLEVEL`        | Logging level (DBEUG, INFO (default), WARN, ERROR)
